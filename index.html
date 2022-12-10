@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            font-size: 1.5rem;
+            width: 80%;
+            margin: 3rem auto;
+            padding: 2rem;
+            max-width: 600px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+        }
+
+        h1 {
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        input[type="text"] {
+            padding: .5rem;
+            font-size: 1.2rem;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: .5rem .8rem;
+            font-size: 1.2rem;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        #todos>div {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center
+        }
+
+        #todos>div>button {
+            margin-left: auto;
+        }
+
+        #todos>div>input {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: .5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Todos</h1>
+        <form id="frmTodos">
+            <input id="title" type="text" placeholder="What are you going to do?" required>
+            <button><i class="fa-solid fa-plus"></i></button>
+        </form>
+        <div id="todos"></div>
+    </div>
+
+    <script>
+        const divTodos = document.getElementById("todos");
+        const frmTodos = document.getElementById("frmTodos");
+        const txtTitle = document.getElementById("title");
+
+        let todos = [
+            {
+                title: "Do your homework",
+                done: false
+            },
+            {
+                title: "Do shopping",
+                done: false
+            },
+            {
+                title: "Take a walk",
+                done: true
+            },
+            {
+                title: "Watch Netflix",
+                done: true
+            }
+        ];
+
+        function listTodos() {
+            todos.sort((a, b) => a.done - b.done);
+            saveData();
+            divTodos.innerHTML = "";
+            for (const todo of todos) {
+                let div = document.createElement("div");
+                let input = document.createElement("input");
+                input.setAttribute("type", "checkbox");
+                input.checked = todo.done;
+                input.onchange = (e) => toggleTodo(todo);
+                div.append(input);
+                let span = document.createElement("span");
+                span.textContent = todo.title;
+                div.append(span);
+                let button = document.createElement("button");
+                button.setAttribute("type", "button");
+                button.onclick = (e) => deleteTodo(todo);;
+                button.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                div.append(button);
+                divTodos.append(div);
+            }
+        }
+
+        function saveData() {
+            localStorage["data"] = JSON.stringify(todos);
+        }
+
+        function loadData() {
+            let json = localStorage["data"];
+            if (!json) return;
+            try {
+                todos = JSON.parse(json);
+            }
+            catch { }
+        }
+
+        function toggleTodo(todo) {
+            todo.done = !todo.done;
+            listTodos();
+        }
+
+        function deleteTodo(todo) {
+            let i = todos.indexOf(todo);
+            todos.splice(i, 1);
+            listTodos();
+        }
+
+        frmTodos.onsubmit = function (event) {
+            event.preventDefault();
+            todos.push({
+                title: txtTitle.value.trim(),
+                done: false
+            });
+            listTodos();
+            txtTitle.value = "";
+        };
+
+        loadData();
+        listTodos();
+    </script>
+</body>
+
+</html>
